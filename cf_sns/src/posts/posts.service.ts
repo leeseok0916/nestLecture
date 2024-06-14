@@ -1,48 +1,26 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-export interface Post {
-  id: number;
-  author: string;
-  title: string;
-  content: string;
-  likeCount: number;
-  commentCount: number;
-}
-
-let posts: Post[] = [
-  {
-    id: 1,
-    author: '홍길동',
-    title: '제목 1',
-    content: '내용 1',
-    likeCount: 10,
-    commentCount: 5,
-  },
-  {
-    id: 2,
-    author: '이순신',
-    title: '제목 2',
-    content: '내용 2',
-    likeCount: 20,
-    commentCount: 12,
-  },
-  {
-    id: 3,
-    author: '김구',
-    title: '제목 3',
-    content: '내용 3',
-    likeCount: 30,
-    commentCount: 35,
-  },
-];
+import { Repository } from 'typeorm';
+import { PostModel } from './entities/post.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class PostsService {
-  getAllPosts() {
-    return posts;
+  constructor(
+    // 어떤 모델의 레포지토리를 주입할 것인지 정의
+    // 레포지토리는 Ioc 컨테이너에 자동으로 인스턴스가 생성되지 않기 때문에 @InjectRepository 데코레이터를 사용하면 인스턴스를 생성해주는 것 같다.
+    // typeorm에 postModel을 주입해줄거야라고 알려주는 것
+    @InjectRepository(PostModel)
+    private readonly postRepository: Repository<PostModel>,
+  ) {}
+
+  async getAllPosts() {
+    return await this.postRepository.find();
   }
 
-  getPostById(id: number) {
-    const post = posts.find((post) => post.id === +id);
+  async getPostById(id: number) {
+    const post = await this.postRepository.findOne({
+      where: { id },
+    });
 
     if (!post) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
@@ -51,21 +29,38 @@ export class PostsService {
     return post;
   }
 
-  createPost(author: string, title: string, content: string) {
-    const post = {
-      id: posts.length + 1,
+  async createPost(author: string, title: string, content: string) {
+    // 데이터를 생성하는 법
+    // create() 로 객체를 생성하고 save() 로 저장한다.
+    // create() 함수로 스키마 유효성 체크 기능이 있음
+    // save() 함수는 저장 기능
+    const post = this.postRepository.create({
       author,
       title,
       content,
       likeCount: 0,
       commentCount: 0,
-    };
-    posts.push(post);
-    return post;
+    });
+
+    const newPost = await this.postRepository.save(post);
+    // const newPost2 = await this.postRepository.save({
+    //   author,
+    //   title,
+    //   content,
+    //   likeCount: 0,
+    //   commentCount: 0,
+    // });
+    return newPost;
   }
 
-  updatePost(id: number, author: string, title: string, content: string) {
-    const post = posts.find((post) => post.id === +id);
+  async updatePost(id: number, author: string, title: string, content: string) {
+    // save의 기능
+    // 1. 데이터가 존재하지 않으면 새로 생성
+    // 2. 데이터가 존재하면 업데이트
+
+    const post = await this.postRepository.findOne({
+      where: { id },
+    });
 
     if (!post) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
@@ -81,28 +76,21 @@ export class PostsService {
       post.content = content;
     }
 
-    // posts = posts.map((p) => (p.id === +id ? post : p));
-
-    // const updatedPost = {
-    //   ...posts[index],
-    //   author,
-    //   title,
-    //   content,
-    // };
-
-    // posts[index] = updatedPost;
-
-    return post;
+    const updatedPost = await this.postRepository.save(post);
+    return updatedPost;
   }
 
-  deletePost(id: number) {
-    const post = posts.find((post) => post.id === +id);
+  async deletePost(id: number) {
+    const post = await this.postRepository.findOne({
+      where: { id },
+    });
 
     if (!post) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
     }
 
-    posts = posts.filter((post) => post.id !== +id);
+    // await this.postRepository.remove(post);
+    await this.postRepository.delete(id);
     return id;
   }
 }
