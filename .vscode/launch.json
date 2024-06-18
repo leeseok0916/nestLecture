@@ -5,7 +5,7 @@
       "type": "node",
       "request": "launch",
       "name": "debug nestJS",
-      "runtimeExecutable": "yarn", // 런타임 환경 정의
+      "runtimeExecutable": "/usr/local/bin/yarn", // 런타임 환경 정의
       "runtimeArgs": ["start:debug"], // 런타임 실행 인자 정의
       "console": "integratedTerminal",
       "restart": true,
