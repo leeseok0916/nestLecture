@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "debug nestJS",
+      "runtimeExecutable": "yarn", // 런타임 환경 정의
+      "runtimeArgs": ["start:debug"], // 런타임 실행 인자 정의
+      "console": "integratedTerminal",
+      "restart": true,
+      "port": 9229, // nestJS 디버깅 포트
+      "autoAttachChildProcesses": true, 
+    }
+  ]
+}
