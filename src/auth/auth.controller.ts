@@ -1,5 +1,10 @@
 import { Body, Controller, Post, Headers } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import {
+  MaxLengthPipe,
+  MinLengthPipe,
+  // PasswordPipe,
+} from './pipe/password.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +21,10 @@ export class AuthController {
   async register(
     @Body('email') email: string,
     @Body('name') name: string,
-    @Body('password') password: string,
+    // @Body('password', PasswordPipe) password: string,
+    @Body('password', new MaxLengthPipe(13), new MinLengthPipe(8))
+    // @Body('password', MaxLengthPipe, MinLengthPipe)
+    password: string,
   ) {
     return this.authService.registerWithEmail({ email, name, password });
   }

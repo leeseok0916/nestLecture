@@ -14,6 +14,14 @@ export class PostsService {
     return await this.postRepository.find();
   }
 
+  getPost(id: number) {
+    return this.postRepository.find({
+      where: {
+        id,
+      },
+    });
+  }
+
   async create(authorId: number, title: string, content: string) {
     const post = this.postRepository.create({
       title,
