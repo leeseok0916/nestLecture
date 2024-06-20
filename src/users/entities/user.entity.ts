@@ -1,18 +1,9 @@
+import { BaseMode } from 'src/entities/base.entity';
 import { PostModel } from 'src/posts/entities/post.entity';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
-export class UserModel {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class UserModel extends BaseMode {
   @Column()
   name: string;
 
@@ -28,12 +19,6 @@ export class UserModel {
     default: 'user',
   })
   role: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 
   @OneToMany(() => PostModel, (post) => post.author)
   posts: PostModel[];

@@ -5,19 +5,24 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
+import { AccessTokenGuard } from '../auth/guard/bearer-token-guard';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  async create(
-    @Body('authorId') authorId: number,
+  @UseGuards(AccessTokenGuard)
+  async createPost(
+    @Request() req: any,
     @Body('title') title: string,
     @Body('content') content: string,
   ) {
+    const authorId = req['user'].id;
     return await this.postsService.create(authorId, title, content);
   }
 
