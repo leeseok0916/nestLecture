@@ -172,8 +172,8 @@ export class AuthService {
 
   verifyToken(token: string) {
     return this.jwtService.verify(token, {
-      // secret: JWT_SECRET,
-      secret: 'lllllsssss00009999',
+      secret: JWT_SECRET,
+      // secret: 'lllllsssss00009999',
     });
   }
 

@@ -10,19 +10,23 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from '../auth/guard/bearer-token-guard';
+import { UserModel } from 'src/users/entities/user.entity';
+import { User } from 'src/users/decorator/user.decorator';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
+  // DTO - Data Transfer Object
   @Post()
   @UseGuards(AccessTokenGuard)
   async createPost(
-    @Request() req: any,
+    // @User() user: UserModel,
+    @User('id') userid: number,
     @Body('title') title: string,
     @Body('content') content: string,
   ) {
-    const authorId = req['user'].id;
+    const authorId = userid;
     return await this.postsService.create(authorId, title, content);
   }
 
