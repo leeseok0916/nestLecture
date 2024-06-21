@@ -4,6 +4,7 @@ import { UserModel } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { JWT_SECRET } from './const/auth.const';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -111,9 +112,7 @@ export class AuthService {
    * @returns 사용자 정보를 반환합니다.
    * @throws 사용자가 이미 존재할 경우 예외가 발생합니다.
    */
-  async registerWithEmail(
-    user: Pick<UserModel, 'email' | 'name' | 'password'>,
-  ) {
+  async registerWithEmail(user: RegisterUserDto) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(user.password, salt); // hash 라운드
     user.password = hashedPassword;

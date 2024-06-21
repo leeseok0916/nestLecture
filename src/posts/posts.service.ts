@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { PostModel } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { CreatePostDto } from './dto/create-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -22,10 +23,10 @@ export class PostsService {
     });
   }
 
-  async create(authorId: number, title: string, content: string) {
+  async create(authorId: number, postDto: CreatePostDto) {
     const post = this.postRepository.create({
-      title,
-      content,
+      title: postDto.title,
+      content: postDto.content,
       author: {
         id: authorId,
       },
