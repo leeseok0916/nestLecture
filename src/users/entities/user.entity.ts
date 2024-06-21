@@ -1,3 +1,4 @@
+import { Exclude, Expose } from 'class-transformer';
 import {
   IsEmail,
   IsString,
@@ -13,6 +14,7 @@ import { PostModel } from 'src/posts/entities/post.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
+@Exclude()
 export class UserModel extends BaseMode {
   @Column()
   @IsString({ message: stringValidationMessage })
@@ -50,6 +52,17 @@ export class UserModel extends BaseMode {
   @IsString({ message: stringValidationMessage })
   // @Length(8, 13, { message: '비밀번호는 8자 이상 13자 이하로 입력해주세요.' })
   @Length(8, 13, { message: lengthValidationMessage })
+  /**
+   * request
+   * frontend -> backend  plan object(json) -> class instance(dto)
+   *
+   * response
+   * backend -> frontend  class instance(dto) -> plan object(json)
+   *
+   * toClassOnly -> class instance 로 변환될때만 -> 요청을 올 때
+   * toPlainOnly -> plain object 로 변환될때만 -> 응답을 보낼때
+   */
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column({

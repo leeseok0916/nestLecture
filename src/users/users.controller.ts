@@ -1,9 +1,4 @@
-import {
-  ClassSerializerInterceptor,
-  Controller,
-  Get,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -20,7 +15,6 @@ export class UsersController {
   // }
 
   @Get()
-  @UseInterceptors(ClassSerializerInterceptor)
   async findAll() {
     return await this.usersService.getUsers();
   }
