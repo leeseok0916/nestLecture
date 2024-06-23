@@ -3,14 +3,18 @@ import { JwtService } from '@nestjs/jwt';
 import { UserModel } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
-import { JWT_SECRET } from './const/auth.const';
+// import { JWT_SECRET } from './const/auth.const';
 import { RegisterUserDto } from './dto/register-user.dto';
+import { ConfigService } from '@nestjs/config';
+// import { JWT_SECRET } from './const/auth.const';
+import { ENV_JWT_SECRET_KEY } from './const/env-keys.const';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private readonly configService: ConfigService,
   ) {}
   /**
    * 1. registerWithEmail
@@ -50,7 +54,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: JWT_SECRET,
+      secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
       expiresIn: isRefreshToken ? 3600 : 300, // 만료일자
     });
   }
@@ -171,7 +175,8 @@ export class AuthService {
 
   verifyToken(token: string) {
     return this.jwtService.verify(token, {
-      secret: JWT_SECRET,
+      secret: this.configService.get<string>(ENV_JWT_SECRET_KEY),
+      // secret: JWT_SECRET,
       // secret: 'lllllsssss00009999',
     });
   }
