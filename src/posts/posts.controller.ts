@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -8,6 +9,7 @@ import {
   Patch,
   Post,
   Request,
+  UseFilters,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -23,6 +25,7 @@ import { DataSource, QueryRunner } from 'typeorm';
 import { LogIntercepter } from 'src/common/intercepter/log.intercepter';
 import { TransactionInterceptor } from 'src/common/intercepter/transaction.intercepter';
 import { CustomQueryRunner } from 'src/common/decorator/query-runner.decorator';
+import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
 
 @Controller('posts')
 export class PostsController {
@@ -62,7 +65,10 @@ export class PostsController {
   }
 
   @Get()
+  @UseInterceptors(LogIntercepter)
+  @UseFilters(HttpExceptionFilter)
   async findAll() {
+    // throw new BadRequestException('test');
     return await this.postsService.getPosts();
   }
 
