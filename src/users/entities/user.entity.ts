@@ -14,7 +14,7 @@ import { PostModel } from 'src/posts/entities/post.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
-@Exclude()
+// @Exclude()
 export class UserModel extends BaseMode {
   @Column()
   @IsString({ message: stringValidationMessage })

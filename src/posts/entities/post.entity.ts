@@ -1,7 +1,8 @@
 import { IsString, MaxLength } from 'class-validator';
 import { BaseMode } from 'src/entities/base.entity';
+import { ImageModel } from 'src/entities/image.entity';
 import { UserModel } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({
   name: 'posts',
@@ -39,4 +40,7 @@ export class PostModel extends BaseMode {
 
   @ManyToOne(() => UserModel, (user) => user.posts)
   author: UserModel;
+
+  @OneToMany(() => ImageModel, (image) => image.post)
+  images: ImageModel[];
 }

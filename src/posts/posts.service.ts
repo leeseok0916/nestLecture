@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { QueryRunner, Repository } from 'typeorm';
 import { PostModel } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -12,19 +12,38 @@ export class PostsService {
   ) {}
 
   async getPosts() {
-    return await this.postRepository.find();
-  }
-
-  getPost(id: number) {
-    return this.postRepository.find({
-      where: {
-        id,
+    return await this.postRepository.find({
+      relations: {
+        author: true,
+        images: true,
       },
     });
   }
 
-  async create(authorId: number, postDto: CreatePostDto) {
-    const post = this.postRepository.create({
+  async getPost(id: number) {
+    const result = await this.postRepository.find({
+      where: {
+        id,
+      },
+      relations: {
+        author: true,
+        images: true,
+      },
+    });
+
+    return result[0];
+  }
+
+  getRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository<PostModel>(PostModel)
+      : this.postRepository;
+  }
+
+  async create(authorId: number, postDto: CreatePostDto, qr?: QueryRunner) {
+    const respository = this.getRepository(qr);
+
+    const post = respository.create({
       title: postDto.title,
       content: postDto.content,
       author: {
@@ -32,6 +51,6 @@ export class PostsService {
       },
     });
 
-    return await this.postRepository.save(post);
+    return await respository.save(post);
   }
 }
