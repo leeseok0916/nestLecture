@@ -9,6 +9,7 @@ import {
   Post,
   Request,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { AccessTokenGuard } from '../auth/guard/bearer-token-guard';
@@ -18,7 +19,10 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { ImageType } from 'src/entities/image.entity';
 import { ImagesService } from './image/images.service';
-import { DataSource } from 'typeorm';
+import { DataSource, QueryRunner } from 'typeorm';
+import { LogIntercepter } from 'src/common/intercepter/log.intercepter';
+import { TransactionInterceptor } from 'src/common/intercepter/transaction.intercepter';
+import { CustomQueryRunner } from 'src/common/decorator/query-runner.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -31,41 +35,30 @@ export class PostsController {
   // DTO - Data Transfer Object
   @Post()
   @UseGuards(AccessTokenGuard)
-  async createPost(@User('id') userid: number, @Body() body: CreatePostDto) {
+  @UseInterceptors(TransactionInterceptor)
+  async createPost(
+    @User('id') userid: number,
+    @Body() body: CreatePostDto,
+    // @Request() req: any,
+    @CustomQueryRunner() qr: QueryRunner,
+  ) {
     const authorId = userid;
-    /**
-     * 1. 쿼리 러너 생성
-     * 2. 쿼리 러너 연결
-     * 3. 쿼리 러너에서 트랜잭션 시작, 쿼리 러너를 통해 쿼리 실행
-     */
-    const qr = this.dataSource.createQueryRunner();
-    await qr.connect();
-    await qr.startTransaction();
 
-    try {
-      const post = await this.postsService.create(authorId, body, qr);
+    const post = await this.postsService.create(authorId, body, qr);
 
-      throw new InternalServerErrorException('test');
+    // throw new InternalServerErrorException('test');
 
-      await this.imagesService.createPostImage(
-        {
-          order: 0,
-          type: ImageType.POST,
-          path: 'image.jpg',
-          post,
-        },
-        qr,
-      );
+    await this.imagesService.createPostImage(
+      {
+        order: 0,
+        type: ImageType.POST,
+        path: 'image.jpg',
+        post,
+      },
+      qr,
+    );
 
-      await qr.commitTransaction();
-      await qr.release();
-
-      return await this.postsService.getPost(post.id);
-    } catch (error) {
-      await qr.rollbackTransaction();
-      await qr.release();
-      throw error;
-    }
+    return await this.postsService.getPost(post.id, qr);
   }
 
   @Get()
@@ -74,6 +67,7 @@ export class PostsController {
   }
 
   @Get(':id')
+  @UseInterceptors(LogIntercepter)
   async findPost(@Param('id', ParseIntPipe) id: number) {
     const result = await this.postsService.getPost(id);
     return result;

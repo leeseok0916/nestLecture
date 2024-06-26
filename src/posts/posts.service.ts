@@ -20,8 +20,10 @@ export class PostsService {
     });
   }
 
-  async getPost(id: number) {
-    const result = await this.postRepository.find({
+  async getPost(id: number, qr?: QueryRunner) {
+    const respository = this.getRepository(qr);
+
+    const result = await respository.find({
       where: {
         id,
       },

@@ -34,7 +34,7 @@ import { ImageModel } from './entities/image.entity';
       database: process.env[ENV_DB_NAME_KEY],
       entities: [UserModel, PostModel, ImageModel],
       synchronize: true,
-      logging: true,
+      // logging: true,
     }),
     UsersModule,
     PostsModule,
