@@ -7,14 +7,11 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
-  UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { AccessTokenGuard } from 'src/auth/guard/bearer-token-guard';
 // import { PaginateCommentDto } from './dto/paginate-comment.dto';
 
 @Controller('posts/:postId/comments')
@@ -38,7 +35,6 @@ export class CommentsController {
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   async createComment(
     @User('id') userId: number,
     @Param('postId', ParseIntPipe) postId: number,
@@ -48,7 +44,6 @@ export class CommentsController {
   }
 
   @Put(':commentId')
-  @UseGuards(AccessTokenGuard)
   async updateComment(
     @Param('commentId', ParseIntPipe) commentId: number,
     @Body() body: UpdateCommentDto,
@@ -57,7 +52,6 @@ export class CommentsController {
   }
 
   @Delete(':commentId')
-  @UseGuards(AccessTokenGuard)
   async deleteComment(@Param('commentId', ParseIntPipe) commentId: number) {
     return await this.commentsService.deleteComment(commentId);
   }

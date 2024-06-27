@@ -1,21 +1,16 @@
 import {
-  BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
-  InternalServerErrorException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
-  Request,
   UseFilters,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { AccessTokenGuard } from '../auth/guard/bearer-token-guard';
-import { UserModel } from 'src/users/entities/user.entity';
 import { User } from 'src/users/decorator/user.decorator';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -26,6 +21,9 @@ import { LogIntercepter } from 'src/common/intercepter/log.intercepter';
 import { TransactionInterceptor } from 'src/common/intercepter/transaction.intercepter';
 import { CustomQueryRunner } from 'src/common/decorator/query-runner.decorator';
 import { HttpExceptionFilter } from 'src/common/exception-filter/http.exception-filter';
+import { Roles } from 'src/users/decorator/roles.decorator';
+import { RolesEnum } from 'src/users/const/roles.conts';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('posts')
 export class PostsController {
@@ -37,7 +35,6 @@ export class PostsController {
 
   // DTO - Data Transfer Object
   @Post()
-  @UseGuards(AccessTokenGuard)
   @UseInterceptors(TransactionInterceptor)
   async createPost(
     @User('id') userid: number,
@@ -67,6 +64,7 @@ export class PostsController {
   @Get()
   @UseInterceptors(LogIntercepter)
   @UseFilters(HttpExceptionFilter)
+  @IsPublic()
   async findAll() {
     // throw new BadRequestException('test');
     return await this.postsService.getPosts();
@@ -74,6 +72,7 @@ export class PostsController {
 
   @Get(':id')
   @UseInterceptors(LogIntercepter)
+  @IsPublic()
   async findPost(@Param('id', ParseIntPipe) id: number) {
     const result = await this.postsService.getPost(id);
     return result;
@@ -87,5 +86,12 @@ export class PostsController {
     console.log(body);
     return 1;
     // return await this.postsService.updatePost(id, body);
+  }
+
+  @Delete(':id')
+  @Roles(RolesEnum.ADMIN)
+  async deletePost(@Param('id', ParseIntPipe) id: number) {
+    console.log(id);
+    return true;
   }
 }

@@ -7,7 +7,7 @@ import { PostsModule } from './posts/posts.module';
 import { UserModel } from './users/entities/user.entity';
 import { PostModel } from './posts/entities/post.entity';
 import { AuthModule } from './auth/auth.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import {
   ENV_DB_HOST_KEY,
@@ -19,6 +19,8 @@ import {
 import { ImageModel } from './entities/image.entity';
 import { CommentModel } from './posts/comments/entity/comment.entity';
 import { CommentsModule } from './posts/comments/comments.module';
+import { RolesGuard } from './users/guard/roles.guard';
+import { AccessTokenGuard } from './auth/guard/bearer-token-guard';
 // import { LogMiddleware } from './common/middleware/log.middleware';
 
 @Module({
@@ -50,6 +52,14 @@ import { CommentsModule } from './posts/comments/comments.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard, // 모든 라우터가 토큰을 검증하도록 설정된다
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

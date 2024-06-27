@@ -16,6 +16,7 @@ import { BaseMode } from 'src/entities/base.entity';
 import { CommentModel } from 'src/posts/comments/entity/comment.entity';
 import { PostModel } from 'src/posts/entities/post.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
+import { RolesEnum } from '../const/roles.conts';
 
 @Entity({ name: 'users' })
 // @Exclude()
@@ -71,8 +72,8 @@ export class UserModel extends BaseMode {
 
   @Column({
     type: 'enum',
-    enum: ['admin', 'user'],
-    default: 'user',
+    enum: RolesEnum,
+    default: RolesEnum.USER,
   })
   role: string;
 

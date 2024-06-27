@@ -1,5 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { Roles } from './decorator/roles.decorator';
+import { RolesEnum } from './const/roles.conts';
 
 @Controller('users')
 export class UsersController {
@@ -15,7 +17,8 @@ export class UsersController {
   // }
 
   @Get()
-  async findAll() {
+  @Roles(RolesEnum.ADMIN)
+  async getUsers() {
     return await this.usersService.getUsers();
   }
 }
