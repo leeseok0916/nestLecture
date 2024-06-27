@@ -1,8 +1,8 @@
 import {
-  MiddlewareConsumer,
+  // MiddlewareConsumer,
   Module,
-  NestModule,
-  RequestMethod,
+  // NestModule,
+  // RequestMethod,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
@@ -12,7 +12,7 @@ import { UsersModule } from 'src/users/users.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { ImagesService } from './image/images.service';
 import { ImageModel } from 'src/entities/image.entity';
-import { LogMiddleware } from 'src/common/middleware/log.middleware';
+// import { LogMiddleware } from 'src/common/middleware/log.middleware';
 
 @Module({
   imports: [
@@ -22,6 +22,7 @@ import { LogMiddleware } from 'src/common/middleware/log.middleware';
   ],
   controllers: [PostsController],
   providers: [PostsService, ImagesService],
+  exports: [PostsService],
 })
 export class PostsModule {}
 // export class PostsModule implements NestModule {

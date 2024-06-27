@@ -17,7 +17,9 @@ import {
   ENV_DB_USER_KEY,
 } from './auth/const/env-keys.const';
 import { ImageModel } from './entities/image.entity';
-import { LogMiddleware } from './common/middleware/log.middleware';
+import { CommentModel } from './posts/comments/entity/comment.entity';
+import { CommentsModule } from './posts/comments/comments.module';
+// import { LogMiddleware } from './common/middleware/log.middleware';
 
 @Module({
   imports: [
@@ -33,13 +35,14 @@ import { LogMiddleware } from './common/middleware/log.middleware';
       username: process.env[ENV_DB_USER_KEY],
       password: process.env[ENV_DB_PASSWORD_KEY],
       database: process.env[ENV_DB_NAME_KEY],
-      entities: [UserModel, PostModel, ImageModel],
+      entities: [UserModel, PostModel, ImageModel, CommentModel],
       synchronize: true,
       // logging: true,
     }),
     UsersModule,
     PostsModule,
     AuthModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [

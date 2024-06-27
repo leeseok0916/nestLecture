@@ -1,15 +1,19 @@
-import { Exclude, Expose } from 'class-transformer';
+import {
+  Exclude,
+  // Expose
+} from 'class-transformer';
 import {
   IsEmail,
   IsString,
   Length,
-  MaxLength,
-  ValidationArguments,
+  // MaxLength,
+  // ValidationArguments,
 } from 'class-validator';
 import { emailValidationMessage } from 'src/common/validation-message/email-validation.message';
 import { lengthValidationMessage } from 'src/common/validation-message/length-validation.message';
 import { stringValidationMessage } from 'src/common/validation-message/string-validation.message';
 import { BaseMode } from 'src/entities/base.entity';
+import { CommentModel } from 'src/posts/comments/entity/comment.entity';
 import { PostModel } from 'src/posts/entities/post.entity';
 import { Column, Entity, OneToMany } from 'typeorm';
 
@@ -74,4 +78,7 @@ export class UserModel extends BaseMode {
 
   @OneToMany(() => PostModel, (post) => post.author)
   posts: PostModel[];
+
+  @OneToMany(() => CommentModel, (comment) => comment.author)
+  comments: CommentModel[];
 }

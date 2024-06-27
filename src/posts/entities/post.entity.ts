@@ -3,6 +3,7 @@ import { BaseMode } from 'src/entities/base.entity';
 import { ImageModel } from 'src/entities/image.entity';
 import { UserModel } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { CommentModel } from '../comments/entity/comment.entity';
 
 @Entity({
   name: 'posts',
@@ -43,4 +44,7 @@ export class PostModel extends BaseMode {
 
   @OneToMany(() => ImageModel, (image) => image.post)
   images: ImageModel[];
+
+  @OneToMany(() => CommentModel, (comment) => comment.post)
+  comments: CommentModel[];
 }

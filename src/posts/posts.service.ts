@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { QueryRunner, Repository } from 'typeorm';
 import { PostModel } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -54,5 +54,17 @@ export class PostsService {
     });
 
     return await respository.save(post);
+  }
+
+  async checkPostExistsById(postId: number) {
+    const post = await this.postRepository.findOne({
+      where: {
+        id: postId,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException('게시글을 찾을 수 없습니다.');
+    }
   }
 }
