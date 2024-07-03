@@ -39,7 +39,7 @@ import { AccessTokenGuard } from './auth/guard/bearer-token-guard';
       database: process.env[ENV_DB_NAME_KEY],
       entities: [UserModel, PostModel, ImageModel, CommentModel],
       synchronize: true,
-      // logging: true,
+      logging: true,
     }),
     UsersModule,
     PostsModule,

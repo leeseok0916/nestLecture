@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { QueryRunner, Repository } from 'typeorm';
 import { PostModel } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -65,6 +65,22 @@ export class PostsService {
 
     if (!post) {
       throw new NotFoundException('게시글을 찾을 수 없습니다.');
+    }
+  }
+
+  async isMinePost(postId: number, userId: number) {
+    const post = await this.postRepository.exists({
+      where: {
+        id: postId,
+        author: {
+          id: userId,
+        },
+      },
+      relations: ['author'],
+    });
+
+    if (!post) {
+      throw new ForbiddenException('자신의 게시글만 수정할 수 있습니다.');
     }
   }
 }
